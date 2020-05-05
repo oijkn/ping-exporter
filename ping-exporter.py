@@ -90,20 +90,27 @@ class GetHandler(BaseHTTPRequestHandler):
         return
 
 if __name__ == '__main__':
-    #Locate the path of fping
-    global filepath
-    filepath = locate("fping")
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-    #Check if there is a special port configured
-    if len(sys.argv) >= 3:
-        port = int(sys.argv[2])
-    else:
-        port = 8085
-    logger.info('Starting server port {}, use <Ctrl-C> to stop'.format(port))
-    server = ThreadedHTTPServer(('0.0.0.0', port), GetHandler)
-    server.serve_forever()
+    try:
+        #Locate the path of fping
+        global filepath
+        filepath = locate("fping")
+        logger = logging.getLogger()
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.DEBUG)
+        #Check if there is a special port configured
+        if len(sys.argv) >= 3:
+            port = int(sys.argv[2])
+        else:
+            port = 8085
+        logger.info('Starting server port {}, use <Ctrl-C> to stop'.format(port))
+        server = ThreadedHTTPServer(('0.0.0.0', port), GetHandler)
+        server.serve_forever()
+    except KeyboardInterrupt:
+        logger.warning("Interrupted requested...exiting")
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
