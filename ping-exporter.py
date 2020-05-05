@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from SocketServer import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
 import threading
 import sys
 import subprocess
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 import logging
 import os
 
@@ -26,7 +26,7 @@ def ping(host, prot, interval, count, size, source):
     #Log the actual ping command for debug purpose
     logger.info(ping_command)
     #Execute the ping
-    cmd_output = subprocess.Popen(ping_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    cmd_output = subprocess.Popen(ping_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8').communicate()
     #Parse the fping output
     try:
         loss = cmd_output[1].split("%")[1].split("/")[2]
@@ -86,7 +86,7 @@ class GetHandler(BaseHTTPRequestHandler):
         #Prepare HTTP status code
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(message)
+        self.wfile.write(message.encode())
         return
 
 if __name__ == '__main__':
